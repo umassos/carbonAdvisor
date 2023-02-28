@@ -2,7 +2,7 @@
 Carbon advisor source for CarbonScaler project. To run CarbonAdvisor, follow the following steps (tested in python 3.9):
 
 
-## 1. Install dependncies
+## 1. Install dependencies
 
 ```pip install -r requirements.txt```
 

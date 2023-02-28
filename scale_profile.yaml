@@ -1,0 +1,162 @@
+densenet121:
+  dataset: imagenet
+  replicas:
+    1:
+      gpuPower: 107.19456730769231
+      throughput: 171197.66644230767
+    2:
+      gpuPower: 200.97340196078432
+      throughput: 335285.2142156863
+    3:
+      gpuPower: 337.7271274509804
+      throughput: 502723.4760784314
+    4:
+      gpuPower: 463.0964174757281
+      throughput: 660015.0053398059
+    5:
+      gpuPower: 576.6975294117647
+      throughput: 826098.8031372549
+    6:
+      gpuPower: 712.1987799999999
+      throughput: 988787.9994
+    7:
+      gpuPower: 830.2636138613861
+      throughput: 1153458.3148514852
+    8:
+      gpuPower: 970.8816633663366
+      throughput: 1312684.8217821782
+efficientnet_b1:
+  dataset: imagenet
+  replicas:
+    1:
+      gpuPower: 123.82610416666667
+      throughput: 227980.74854166666
+    2:
+      gpuPower: 236.6478640776699
+      throughput: 433151.5466019417
+    3:
+      gpuPower: 379.49720952380954
+      throughput: 643382.5687619047
+    4:
+      gpuPower: 493.6452884615385
+      throughput: 847653.4054807692
+    5:
+      gpuPower: 607.3722211538461
+      throughput: 1063348.476923077
+    6:
+      gpuPower: 659.0577238095238
+      throughput: 1253202.7638095238
+    7:
+      gpuPower: 813.6034411764707
+      throughput: 1471424.3333333333
+    8:
+      gpuPower: 857.7245048543689
+      throughput: 1653699.5689320387
+mobilenet_v2:
+  dataset: imagenet
+  replicas:
+    1:
+      gpuPower: 124.33058208955224
+      throughput: 437939.4601492537
+    2:
+      gpuPower: 233.76549074074072
+      throughput: 758978.705
+    3:
+      gpuPower: 342.2022924528302
+      throughput: 1097454.8693396226
+    4:
+      gpuPower: 468.67347222222224
+      throughput: 1459309.2777777778
+    5:
+      gpuPower: 637.3973214285714
+      throughput: 1735969.544047619
+    6:
+      gpuPower: 692.4968611111112
+      throughput: 2057595.048148148
+    7:
+      gpuPower: 868.2563909090909
+      throughput: 2343634.651818182
+    8:
+      gpuPower: 884.1737614678899
+      throughput: 2621332.162385321
+resnet18:
+  dataset: tinyimagenet
+  replicas:
+    1:
+      gpuPower: 149.98675714285716
+      throughput: 723593.96
+    2:
+      gpuPower: 259.2439090909091
+      throughput: 1376437.4429752065
+    3:
+      gpuPower: 398.5955729166667
+      throughput: 2086484.0999999999
+    4:
+      gpuPower: 458.7964958677686
+      throughput: 2756019.248760331
+    5:
+      gpuPower: 569.7354876033058
+      throughput: 3332309.4719008263
+    6:
+      gpuPower: 716.5243541666667
+      throughput: 4069462.9375
+    7:
+      gpuPower: 998.4906164383561
+      throughput: 4676267.657534246
+    8:
+      gpuPower: 1019.6534385964912
+      throughput: 5297159.320175438
+resnet50:
+  dataset: imagenet
+  replicas:
+    1:
+      gpuPower: 150.6098947368421
+      throughput: 189144.11157894737
+    2:
+      gpuPower: 285.9453974358974
+      throughput: 368696.9215384615
+    3:
+      gpuPower: 446.3946103896104
+      throughput: 543871.9148051948
+    4:
+      gpuPower: 569.9816582278481
+      throughput: 721842.6453164556
+    5:
+      gpuPower: 694.9782467532468
+      throughput: 913302.3431168832
+    6:
+      gpuPower: 865.5079868421053
+      throughput: 1079458.5605263158
+    7:
+      gpuPower: 1025.9653066666667
+      throughput: 1257625.2973333334
+    8:
+      gpuPower: 1038.16512987013
+      throughput: 1429814.5922077922
+vgg16:
+  dataset: imagenet
+  replicas:
+    1:
+      gpuPower: 147.93934210526314
+      throughput: 132815.06810526314
+    2:
+      gpuPower: 252.61506578947368
+      throughput: 161694.3647368421
+    3:
+      gpuPower: 431.14624
+      throughput: 196948.116
+    4:
+      gpuPower: 611.2305200000001
+      throughput: 234455.20919999998
+    5:
+      gpuPower: 703.2073333333333
+      throughput: 278804.44
+    6:
+      gpuPower: 718.1411923076922
+      throughput: 324038.20000000007
+    7:
+      gpuPower: 643.2256
+      throughput: 370838.34
+    8:
+      gpuPower: 1040.9610416666667
+      throughput: 416441.56

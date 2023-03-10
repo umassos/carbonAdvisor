@@ -44,14 +44,16 @@ carbon_trace_map = {trace_name: trace_path for trace_name, trace_path in zip(car
 
 #selected_trace = st.sidebar.selectbox("Carbon Trace", options=carbon_trace_names) #do it for every country
 
-carbon_traces = []
-min_date_value = []
-max_date_value = []
+
 # print(carbon_trace_names)
-carbon_trace_names_total = ['IE','IN-MH']
+carbon_trace_names_total = ['IE','IN-MH','IS']
 
 carbon_trace_names_test = st.sidebar.multiselect(
     'Countries',carbon_trace_names_total)
+
+carbon_traces = []
+min_date_value = []
+max_date_value = []
 
 for selected_trace in carbon_trace_names_test:
     carbon_trace = pd.read_csv(carbon_trace_map[selected_trace])
@@ -80,11 +82,17 @@ input_started_date = st.sidebar.date_input("Started Date", min_value=max(min_dat
                                            max_value=min(max_date_value), value=max(min_date_value))
 
 #need to figure out - to do
-# started_datetime_df = carbon_trace[carbon_trace["date"] == input_started_date]
 
-input_started_hour = st.sidebar.number_input("Started Hour", min_value=4,
-                                             max_value=22,
-                                             value=4)
+min_hour_value = []
+max_hour_value = []
+for carbon_trace in carbon_traces:
+    started_datetime_df = carbon_trace[carbon_trace["date"] == input_started_date]
+    min_hour_value.append(started_datetime_df["hour"].min())
+    max_hour_value.append(started_datetime_df["hour"].max())
+
+input_started_hour = st.sidebar.number_input("Started Hour", min_value=max(min_hour_value),
+                                             max_value=min(max_hour_value),
+                                             value=max(min_hour_value))
 
 started_hour_time = datetime.time(hour=input_started_hour)
 started_datetime = datetime.datetime.combine(input_started_date, started_hour_time)
@@ -107,7 +115,9 @@ for num_workers, profile in model_profile["replicas"].items():
     tp_table[num_workers] = profile["throughput"]
     energy_table[num_workers] = profile["gpuPower"] + (cpu_power_offset * num_workers)  # Add CPU energy offset
 
+
 tp_table = tp_table / ds_size  # to epochs per hour
+
 energy_table = energy_table * 3600. / 3.6e+6   # to Kwh per hour
 num_epochs = tp_table[1] * input_task_length
 
@@ -121,10 +131,8 @@ for carbon_trace in carbon_traces:
     carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
     carbon_cost_scale, carbon_scale_states, carbon_scale_action = \
         eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
-
+    # print(carbon_scale_states)
     # st.metric("Carbon Scale Footprint", f"{carbon_cost_scale[0]:.2f}g")
-
-
     #to kgs
     carbon_consumption.append(carbon_cost_scale[0]/1000)
 
@@ -135,5 +143,6 @@ sched_fig.add_trace(
                mode="lines+markers", name="Carbon Intensity"),
     secondary_y=False
 )
-
+sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)")
+sched_fig.update_xaxes(title_text="Countries")
 st.plotly_chart(sched_fig)

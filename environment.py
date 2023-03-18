@@ -176,7 +176,7 @@ class CarbonOnlyEnvironment(Environment):
         self._reward_fn = reward_fn
         self._start_idx = np.array(start_idx)
         self._cur_idx = np.array(start_idx)
-        self._remain_epochs = np.ones_like(self._start_idx, dtype=np.float) * num_epochs
+        self._remain_epochs = np.ones_like(self._start_idx, dtype=float) * num_epochs
 
     def take_action(self, action: np.ndarray, exec_time: np.ndarray) -> Tuple[np.ndarray, CarbonState]:
         """ Take action and return reward and next state
@@ -195,7 +195,7 @@ class CarbonOnlyEnvironment(Environment):
 
         assert np.all(self._cur_idx + t < self._carbon_intensity.shape[0])
 
-        carbon_intensity_idx = np.empty_like(action, dtype=np.int)
+        carbon_intensity_idx = np.empty_like(action, dtype=int)
         for i in range(n):
             carbon_intensity_idx[i, :] = np.arange(self._cur_idx[i], self._cur_idx[i]+t)
 
@@ -233,7 +233,7 @@ class CarbonOnlyEnvironment(Environment):
         n = self._cur_idx.shape[0]
 
         assert np.all(self._cur_idx + t < self._carbon_intensity.shape[0])
-        carbon_intensity_idx = np.empty([n, t], dtype=np.int)
+        carbon_intensity_idx = np.empty([n, t], dtype=int)
 
         for i in range(n):
             carbon_intensity_idx[i, :] = np.arange(self._cur_idx[i], self._cur_idx[i]+t)

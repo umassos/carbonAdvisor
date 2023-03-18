@@ -101,7 +101,9 @@ started_datetime = datetime.datetime.combine(input_started_date, started_hour_ti
 
 
 sched_fig = make_subplots(specs=[[{"secondary_y": True}]])
+sched_fig1 = make_subplots(specs=[[{"secondary_y": True}]])
 carbon_consumption = []
+prices = []
 
 model_profile = task_profile[selected_task]
 dataset = model_profile["dataset"]
@@ -129,20 +131,38 @@ for carbon_trace in carbon_traces:
     env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                             reward, np.array([started_index]), num_epochs)
     carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
-    carbon_cost_scale, carbon_scale_states, carbon_scale_action = \
+    carbon_cost_scale, carbon_scale_states, carbon_scale_action, exec_time = \
         eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
     # print(carbon_scale_states)
     # st.metric("Carbon Scale Footprint", f"{carbon_cost_scale[0]:.2f}g")
     #to kgs
+
+    #calculate compute time (multiply exec_time * nodes(servers))
+    exec_time = np.array(exec_time)
+    nodes = np.array(carbon_scale_action.flatten())
+    # print(nodes)
+    # print(exec_time)
+    compute_time = np.sum(np.multiply(nodes,exec_time))
+    #need to multiply with instance later - to do
+    prices.append(compute_time)
     carbon_consumption.append(carbon_cost_scale[0]/1000)
 
 
 sched_fig.add_trace(
-    go.Scatter(x=carbon_trace_names_test,
+    go.Bar(x=carbon_trace_names_test,
                y=carbon_consumption,
-               mode="lines+markers", name="Carbon Intensity"),
+                name="Carbon Intensity"),
     secondary_y=False
 )
-sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)")
+
+sched_fig1.add_trace(
+    go.Bar(x=carbon_trace_names_test, y=prices,  name="Price per instance"),
+    secondary_y=True
+)
+
+sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False)
+sched_fig1.update_yaxes(title_text="Price per instance")
 sched_fig.update_xaxes(title_text="Countries")
+sched_fig1.update_xaxes(title_text="Countries")
 st.plotly_chart(sched_fig)
+st.plotly_chart(sched_fig1)

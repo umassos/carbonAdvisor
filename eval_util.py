@@ -16,7 +16,7 @@ def simulate_agent(target_agent, env, deadline):
 
     assert np.all(np.isclose(next_state.remain_epochs, 0))
 
-    return -carbon_cost, states, action
+    return -carbon_cost, states, action, exec_time
 
 
 def compute_carbon_cost_wait_awhile(carbon_trace, num_tasks, num_workers, deadline, start_idx,

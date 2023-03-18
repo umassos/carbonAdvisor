@@ -98,7 +98,7 @@ reward = environment.NonLinearReward(tp_table, energy_table)
 env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                         reward, np.array([started_index]), num_epochs)
 carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
-carbon_cost_scale, carbon_scale_states, carbon_scale_action = \
+carbon_cost_scale, carbon_scale_states, carbon_scale_action, exec_time = \
     eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
 carbon_scale_action = carbon_scale_action.flatten()
 
@@ -110,7 +110,7 @@ env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].val
                                         reward, np.array([started_index]), num_epochs)
 wait_awhile_agent = agent.WaitAWhileOptimalAgent(epochs_per_unit_time, num_workers, input_deadline)
 
-carbon_cost_waitawhile, wait_awhile_states, wait_awhile_action = \
+carbon_cost_waitawhile, wait_awhile_states, wait_awhile_action, exec_time = \
     eval_util.simulate_agent(wait_awhile_agent, env, input_deadline)
 wait_awhile_action = wait_awhile_action.flatten()
 
@@ -118,7 +118,7 @@ wait_awhile_action = wait_awhile_action.flatten()
 env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                         reward, np.array([started_index]), num_epochs)
 carbom_agnostic_agent = agent.NaiveAgent(epochs_per_unit_time, num_workers, input_deadline)
-carbon_cost_naive, naive_states, naive_action = \
+carbon_cost_naive, naive_states, naive_action, exec_time = \
     eval_util.simulate_agent(carbom_agnostic_agent, env, input_deadline)
 naive_action = naive_action.flatten()
 
@@ -196,19 +196,19 @@ started_index_batch = np.random.randint(0, carbon_trace.shape[0]-input_deadline,
 # carbon scale
 env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                         reward, started_index_batch, num_epochs)
-carbon_cost_scale_batch, carbon_scale_states_batch, carbon_scale_action_batch = \
+carbon_cost_scale_batch, carbon_scale_states_batch, carbon_scale_action_batch, exec_time = \
     eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
 
 # wait awhile
 env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                         reward, started_index_batch, num_epochs)
-carbon_cost_waitawhile_batch, wait_awhile_states_batch, wait_awhile_action_batch = \
+carbon_cost_waitawhile_batch, wait_awhile_states_batch, wait_awhile_action_batch,exec_time = \
     eval_util.simulate_agent(wait_awhile_agent, env, input_deadline)
 
 # carbon agnostic
 env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                         reward, started_index_batch, num_epochs)
-carbon_cost_naive_batch, naive_states_batch, naive_action_batch = \
+carbon_cost_naive_batch, naive_states_batch, naive_action_batch, exec_time = \
     eval_util.simulate_agent(carbom_agnostic_agent, env, input_deadline)
 
 

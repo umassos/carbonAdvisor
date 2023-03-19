@@ -46,7 +46,8 @@ carbon_trace_map = {trace_name: trace_path for trace_name, trace_path in zip(car
 
 
 # print(carbon_trace_names)
-carbon_trace_names_total = ['IE','IN-MH','IS']
+carbon_trace_names_total = ['IE','IN-MH','IS','AUS-NSW','AUS-VIC','BE','BR-CS','CA-ON','CA-QC','CH','CL-SEN','DE','ES','FI','FR','GB','HK',
+'ID','IN-DL','IT-NO','JP-KN','JP-TK','KR','NL','NO-NO1','NZ-NZN','PL','SE','SG','TW','UY','ZA']
 
 carbon_trace_names_test = st.sidebar.multiselect(
     'Countries',carbon_trace_names_total)

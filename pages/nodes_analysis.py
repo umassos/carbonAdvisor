@@ -63,7 +63,7 @@ input_started_hour = st.sidebar.number_input("Started Hour", min_value=started_d
                                              max_value=started_datetime_df["hour"].max(),
                                              value=started_datetime_df["hour"].min())
 
-started_hour_time = datetime.time(hour=input_started_hour)
+started_hour_time = datetime.time(hour=int(input_started_hour))
 
 started_datetime = datetime.datetime.combine(input_started_date, started_hour_time)
 
@@ -105,7 +105,7 @@ for input_max_workers in range(2,9):
                                             reward, np.array([started_index]), num_epochs)
     carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
     carbon_cost_scale, carbon_scale_states, carbon_scale_action, exec_time = \
-        eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
+        eval_util.simulate_agent(carbon_scale_agent, env, int(input_deadline))
     carbon_scale_action = carbon_scale_action.flatten()
     nodes.append(input_max_workers)
     
@@ -117,18 +117,18 @@ for input_max_workers in range(2,9):
     carbon_consumption.append(carbon_cost_scale[0]/1000)
 
 sched_fig.add_trace(
-    go.Scatter(x=nodes,
-               y=carbon_consumption, mode="lines+markers",
+    go.Bar(x=nodes,
+               y=carbon_consumption, 
                 name="Carbon Intensity"),
     secondary_y=False
 )
 
 sched_fig1.add_trace(
-    go.Scatter(x=nodes,
+    go.Bar(x=nodes,
                y=prices,
-               mode="lines+markers",
+               
                 name="Price", hovertext=priceOverhead,
-           hovertemplate="%{hovertext}"),
+           hovertemplate="Price:%{y}<br>%{hovertext}"),
     secondary_y=False
 )
 

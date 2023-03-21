@@ -163,7 +163,7 @@ class CarbonScaleAgent(Agent):
 
         carbon_per_tp = self.energy_table[1] * carbon_intensity / self.throughput_table[1]
 
-        while not np.all(remain_epochs == 0):
+        while not np.all(np.isclose(remain_epochs, 0)):
             running_idx = np.where(remain_epochs > 0)[0]
             min_idx = np.argmin(carbon_per_tp, axis=1)
             t_idx = min_idx[running_idx]

@@ -99,22 +99,42 @@ prices = []
 priceOverhead = []
 
 baseCost = 0.0
+
+
 # Carbon scale method
 for input_max_workers in range(2,9):
+    epochs_per_unit_time = tp_table[1]
+    num_workers = 1
+    env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
+                                        reward, np.array([started_index]), num_epochs)
+    carbom_agnostic_agent = agent.NaiveAgent(epochs_per_unit_time, num_workers , input_deadline)
+    carbon_cost_naive, naive_states, naive_action, exec_time = \
+        eval_util.simulate_agent(carbom_agnostic_agent, env, input_deadline)
+    naive_action = naive_action.flatten()
+
+    
     env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                             reward, np.array([started_index]), num_epochs)
     carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
     carbon_cost_scale, carbon_scale_states, carbon_scale_action, exec_time = \
         eval_util.simulate_agent(carbon_scale_agent, env, int(input_deadline))
     carbon_scale_action = carbon_scale_action.flatten()
+
+    
+    carbon_saving = 1 - (carbon_cost_scale / carbon_cost_naive)[0]
+    
     nodes.append(input_max_workers)
     
     compute_time = np.sum(np.multiply(carbon_scale_action,exec_time))
     prices.append(compute_time)
     if(input_max_workers == 2):
         baseCost = compute_time
-    priceOverhead.append("Price Overhead:" + str(round((((compute_time/baseCost) - 1) * 100),2))+ "%")
+    priceOverhead.append("Price Overhead:" + str(round((((compute_time/baseCost) - 1) * 100),2))+ "% \n" + 
+        "Carbon Saving: " +str({carbon_saving*100}) + "%")
     carbon_consumption.append(carbon_cost_scale[0]/1000)
+
+
+
 
 sched_fig.add_trace(
     go.Bar(x=nodes,

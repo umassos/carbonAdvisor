@@ -69,7 +69,7 @@ started_datetime = datetime.datetime.combine(input_started_date, started_hour_ti
 
 started_index = carbon_trace.index[carbon_trace["datetime"] == started_datetime][0]
 
-st.markdown("## Carbon Footprint Analyzer for ML Tasks")
+st.markdown("## Analysis as per the nodes")
 
 
 # simulation
@@ -99,6 +99,7 @@ prices = []
 priceOverhead = []
 
 baseCost = 0.0
+
 
 
 # Carbon scale method
@@ -143,6 +144,8 @@ sched_fig.add_trace(
     secondary_y=False
 )
 
+
+
 sched_fig1.add_trace(
     go.Bar(x=nodes,
                y=prices,
@@ -157,5 +160,9 @@ sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False)
 sched_fig1.update_yaxes(title_text="Prices")
 sched_fig.update_xaxes(title_text="# Nodes")
 sched_fig1.update_xaxes(title_text="# Nodes")
+
+st.markdown("##### 1. Carbon consumption vs Nodes")
 st.plotly_chart(sched_fig)
+
+st.markdown("##### 2. Prices vs Nodes")
 st.plotly_chart(sched_fig1)

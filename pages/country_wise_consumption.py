@@ -102,7 +102,7 @@ started_datetime = datetime.datetime.combine(input_started_date, started_hour_ti
 
 
 sched_fig = make_subplots(specs=[[{"secondary_y": True}]])
-sched_fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+# sched_fig1 = make_subplots(specs=[[{"secondary_y": True}]])
 carbon_consumption = []
 prices = []
 
@@ -156,14 +156,20 @@ sched_fig.add_trace(
     secondary_y=False
 )
 
-sched_fig1.add_trace(
-    go.Bar(x=carbon_trace_names_test, y=prices,  name="Price per instance"),
-    secondary_y=True
-)
+# sched_fig1.add_trace(
+#     go.Bar(x=carbon_trace_names_test, y=prices,  name="Price per instance"),
+#     secondary_y=True
+# )
+
+
 
 sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False)
-sched_fig1.update_yaxes(title_text="Price per instance")
+# sched_fig1.update_yaxes(title_text="Price per instance")
 sched_fig.update_xaxes(title_text="Countries")
-sched_fig1.update_xaxes(title_text="Countries")
+# sched_fig1.update_xaxes(title_text="Countries")
 st.plotly_chart(sched_fig)
-st.plotly_chart(sched_fig1)
+# st.plotly_chart(sched_fig1)
+
+df = pd.DataFrame({'Countries': carbon_trace_names_test, 'Prices': list(prices)}, columns=['Countries', 'Prices'])
+
+st.table(df)

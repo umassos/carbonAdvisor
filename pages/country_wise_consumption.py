@@ -30,8 +30,12 @@ ds_size_map = {
 
 cpu_power_offset = 50
 
-st.sidebar.markdown("### Country wise plots")
-st.markdown("## C02 consumption and savings")
+st.sidebar.markdown("### Inputs")
+st.markdown("## Country wise analysis")
+st.markdown("### C02 consumption and Prices")
+
+st.markdown("#### 1. Country vs CO2 consumption")
+st.markdown("This is a plot which shows countries and their respective CO2 consumption")
 
 profile_path = "scale_profile.yaml"
 with open(profile_path, 'r') as f:
@@ -42,15 +46,8 @@ carbon_trace_names = [os.path.basename(trace_name) for trace_name in carbon_trac
 carbon_trace_names = [os.path.splitext(trace_name)[0] for trace_name in carbon_trace_names]
 carbon_trace_map = {trace_name: trace_path for trace_name, trace_path in zip(carbon_trace_names, carbon_traces_path)}
 
-#selected_trace = st.sidebar.selectbox("Carbon Trace", options=carbon_trace_names) #do it for every country
-
-
-# print(carbon_trace_names)
-carbon_trace_names_total = ['IE','IN-MH','IS','AUS-NSW','AUS-VIC','BE','BR-CS','CA-ON','CA-QC','CH','CL-SEN','DE','ES','FI','FR','GB','HK',
-'ID','IN-DL','IT-NO','JP-KN','JP-TK','KR','NL','NO-NO1','NZ-NZN','PL','SE','SG','TW','UY','ZA']
-
 carbon_trace_names_test = st.sidebar.multiselect(
-    'Countries',carbon_trace_names_total)
+    'Countries',carbon_trace_map,default = ["CA-ON"])
 
 carbon_traces = []
 min_date_value = []
@@ -163,13 +160,18 @@ sched_fig.add_trace(
 
 
 
-sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False)
+sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False )
 # sched_fig1.update_yaxes(title_text="Price per instance")
-sched_fig.update_xaxes(title_text="Countries")
+sched_fig.update_xaxes(title_text="Countries",categoryorder='total ascending')
 # sched_fig1.update_xaxes(title_text="Countries")
 st.plotly_chart(sched_fig)
 # st.plotly_chart(sched_fig1)
 
+
+st.markdown("#### 2. Country and their price/instance")
+st.markdown("Note: The Price calculated is the sum of time required to execute multiplies by number of used nodes(servers) at every hour")
 df = pd.DataFrame({'Countries': carbon_trace_names_test, 'Prices': list(prices)}, columns=['Countries', 'Prices'])
 
 st.table(df)
+
+st.markdown("The decision of choosing a country would be based on decreasing carbon consumption and also which has relatively lower cost")

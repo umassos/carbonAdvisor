@@ -103,7 +103,7 @@ baseCost = 0.0
 
 
 # Carbon scale method
-for input_max_workers in range(2,9):
+for input_max_workers in range(1,9):
     epochs_per_unit_time = tp_table[1]
     num_workers = 1
     env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
@@ -128,7 +128,7 @@ for input_max_workers in range(2,9):
     
     compute_time = np.sum(np.multiply(carbon_scale_action,exec_time))
     prices.append(compute_time)
-    if(input_max_workers == 2):
+    if(input_max_workers == 1):
         baseCost = compute_time
     priceOverhead.append("Price Overhead:" + str(round((((compute_time/baseCost) - 1) * 100),2))+ "% \n" + 
         "Carbon Saving: " +str({carbon_saving*100}) + "%")
@@ -162,7 +162,12 @@ sched_fig.update_xaxes(title_text="# Nodes")
 sched_fig1.update_xaxes(title_text="# Nodes")
 
 st.markdown("##### 1. Carbon consumption vs Nodes")
+st.markdown("This bar graph shows the carbon consumption as the nodes (servers) increase")
 st.plotly_chart(sched_fig)
+st.markdown("Since the nodes (servers) increase, you can see a dip in carbon consumption. This is because the load is divided among \
+             various servers parallely")
 
 st.markdown("##### 2. Prices vs Nodes")
+st.markdown("This bar graph shows the cost as the nodes (servers) increase")
 st.plotly_chart(sched_fig1)
+st.markdown("The prices due to additional cost added as the servers increase ")

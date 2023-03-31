@@ -51,7 +51,7 @@ carbon_trace["date"] = carbon_trace["zone_datetime"].apply(lambda x: parser.pars
 
 
 selected_task = st.sidebar.selectbox("Task", options=task_profile.keys())
-input_task_length = st.sidebar.number_input("Task Length (hour)", min_value=1, value=24)
+input_task_length = int(st.sidebar.number_input("Task Length (hour)", min_value=1, value=24))
 input_deadline = int(st.sidebar.number_input("Deadline", min_value=input_task_length, value=input_task_length))
 # input_max_workers = st.sidebar.number_input("Max Workers", min_value=1, max_value=8, value=8)
 

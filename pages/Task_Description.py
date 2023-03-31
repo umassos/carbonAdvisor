@@ -40,7 +40,7 @@ ds_size_map = {
 }
 
 selected_tasks = st.sidebar.multiselect("Tasks", tasks.keys(), default=["tinyimagenet-resnet18"])
-cpu_power_offset = st.sidebar.number_input("CPU Power offset (W)", min_value=0, max_value=100, value=50)
+cpu_power_offset = int(st.sidebar.number_input("CPU Power offset (W)", min_value=0, max_value=100, value=50))
 
 st.markdown("""This page description the profile behavior of different tasks. The performance is profiled on
                AWS `p2.xlarge` instances with Nvidia K80 GPU. 

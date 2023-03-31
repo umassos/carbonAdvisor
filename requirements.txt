@@ -1,4 +1,4 @@
-numpy==1.22.4
+numpy==1.24.2
 pandas==1.4.3
 plotly==5.8.2
 python_dateutil==2.8.2

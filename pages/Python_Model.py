@@ -57,15 +57,15 @@ carbon_trace["date"] = carbon_trace["zone_datetime"].apply(lambda x: parser.pars
 
 selected_task = st.sidebar.selectbox("Task", options=task_profile.keys())
 input_task_length = int(st.sidebar.number_input("Task Length (hour)", min_value=1, value=24))
-input_deadline = st.sidebar.number_input("Deadline", min_value=input_task_length, value=input_task_length)
-input_max_workers = st.sidebar.number_input("Max Workers", min_value=1, max_value=8, value=8)
+input_deadline = int(st.sidebar.number_input("Deadline", min_value=input_task_length, value=input_task_length))
+input_max_workers = int(st.sidebar.number_input("Max Workers", min_value=1, max_value=8, value=8))
 input_started_date = st.sidebar.date_input("Started Date", min_value=carbon_trace["date"].min(),
                                            max_value=carbon_trace["date"].max(), value=carbon_trace["date"].min())
 started_datetime_df = carbon_trace[carbon_trace["date"] == input_started_date]
 
-input_started_hour = st.sidebar.number_input("Started Hour", min_value=started_datetime_df["hour"].min(),
+input_started_hour = int(st.sidebar.number_input("Started Hour", min_value=started_datetime_df["hour"].min(),
                                              max_value=started_datetime_df["hour"].max(),
-                                             value=started_datetime_df["hour"].min())
+                                             value=started_datetime_df["hour"].min()))
 
 started_hour_time = datetime.time(hour=input_started_hour)
 started_datetime = datetime.datetime.combine(input_started_date, started_hour_time)
@@ -189,7 +189,7 @@ with col3:
 ### Batch sampling
 st.markdown("## Batch Sampling")
 st.markdown("Launch $$n$$ tasks with random start time")
-input_num_samples = st.number_input("Sample size", step=1, min_value=1, max_value=50000, value=1000)
+input_num_samples = int(st.number_input("Sample size", step=1, min_value=1, max_value=50000, value=1000))
 
 started_index_batch = np.random.randint(0, carbon_trace.shape[0]-input_deadline, input_num_samples)
 

@@ -59,9 +59,9 @@ input_started_date = st.sidebar.date_input("Started Date", min_value=carbon_trac
                                            max_value=carbon_trace["date"].max(), value=carbon_trace["date"].min())
 started_datetime_df = carbon_trace[carbon_trace["date"] == input_started_date]
 
-input_started_hour = st.sidebar.number_input("Started Hour", min_value=started_datetime_df["hour"].min(),
+input_started_hour = int(st.sidebar.number_input("Started Hour", min_value=started_datetime_df["hour"].min(),
                                              max_value=started_datetime_df["hour"].max(),
-                                             value=started_datetime_df["hour"].min())
+                                             value=started_datetime_df["hour"].min()))
 
 started_hour_time = datetime.time(hour=int(input_started_hour))
 

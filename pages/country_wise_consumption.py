@@ -70,8 +70,8 @@ for selected_trace in carbon_trace_names_test:
 
 selected_task = st.sidebar.selectbox("Task", options=task_profile.keys())
 input_task_length = int(st.sidebar.number_input("Task Length (hour)", min_value=1, value=24))
-input_deadline = st.sidebar.number_input("Deadline", min_value=input_task_length, value=input_task_length)
-input_max_workers = st.sidebar.number_input("Max Workers", min_value=1, max_value=8, value=8)
+input_deadline = int(st.sidebar.number_input("Deadline", min_value=input_task_length, value=input_task_length))
+input_max_workers = int(st.sidebar.number_input("Max Workers", min_value=1, max_value=8, value=8))
 
 
 
@@ -88,9 +88,9 @@ for carbon_trace in carbon_traces:
     min_hour_value.append(started_datetime_df["hour"].min())
     max_hour_value.append(started_datetime_df["hour"].max())
 
-input_started_hour = st.sidebar.number_input("Started Hour", min_value=max(min_hour_value),
+input_started_hour = int(st.sidebar.number_input("Started Hour", min_value=max(min_hour_value),
                                              max_value=min(max_hour_value),
-                                             value=max(min_hour_value))
+                                             value=max(min_hour_value)))
 
 started_hour_time = datetime.time(hour=input_started_hour)
 started_datetime = datetime.datetime.combine(input_started_date, started_hour_time)

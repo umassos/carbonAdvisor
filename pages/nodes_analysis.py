@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dateutil import parser
 from glob import glob
-
+from Update_Session import fUpdateSessionDefaultProfile
 
 def get_datetime(iso_str):
     dt = parser.parse(iso_str)
@@ -36,9 +36,16 @@ carbon_trace_names = [os.path.basename(trace_name) for trace_name in carbon_trac
 carbon_trace_names = [os.path.splitext(trace_name)[0] for trace_name in carbon_trace_names]
 carbon_trace_map = {trace_name: trace_path for trace_name, trace_path in zip(carbon_trace_names, carbon_traces_path)}
 
-profile_path = "scale_profile.yaml"
-with open(profile_path, 'r') as f:
-    task_profile = yaml.safe_load(f)
+# profile_path = "scale_profile.yaml"
+# with open(profile_path, 'r') as f:
+#     task_profile = yaml.safe_load(f)
+
+# Call the library to update the session state "Config_session" if it is not available.
+if "config_session" not in st.session_state:
+    fUpdateSessionDefaultProfile()
+
+# Updates task_profile from the scale_profile.yaml that is in session storage
+task_profile = st.session_state["config_session"]
 
 st.sidebar.markdown("### Policy Model")
 

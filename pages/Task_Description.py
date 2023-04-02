@@ -12,9 +12,16 @@ from Update_Session import fUpdateSessionDefaultProfile
 st.sidebar.markdown("### Task Description")
 st.markdown("## Task Description")
 
-profile_path = "scale_profile.yaml"
-with open(profile_path, "r") as f:
-    profile_data = yaml.safe_load(f)
+# profile_path = "scale_profile.yaml"
+# with open(profile_path, "r") as f:
+#     profile_data = yaml.safe_load(f)
+
+# Call the library to update the session state "Config_session" if it is not available.
+if "config_session" not in st.session_state:
+    fUpdateSessionDefaultProfile()
+
+# Updates profile_data from the scale_profile.yaml that is in session storage
+profile_data = st.session_state["config_session"]
 
 tasks = {}
 for name, task in profile_data.items():

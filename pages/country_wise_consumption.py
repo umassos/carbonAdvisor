@@ -16,6 +16,8 @@ from plotly.subplots import make_subplots
 import environment
 import agent
 import eval_util
+from Update_Session import fUpdateSessionDefaultProfile
+
 
 def get_datetime(iso_str):
     dt = parser.parse(iso_str)
@@ -37,9 +39,12 @@ st.markdown("### C02 consumption and Prices")
 st.markdown("#### 1. Country vs CO2 consumption")
 st.markdown("This is a plot which shows countries and their respective CO2 consumption")
 
-profile_path = "scale_profile.yaml"
-with open(profile_path, 'r') as f:
-    task_profile = yaml.safe_load(f)
+# Call the library to update the session state "Config_session" if it is not available.
+if "config_session" not in st.session_state:
+    fUpdateSessionDefaultProfile()
+
+# Updates task_profile from the scale_profile.yaml that is in session storage
+task_profile = st.session_state["config_session"]
 
 carbon_traces_path = sorted(glob("traces/*.csv"))
 carbon_trace_names = [os.path.basename(trace_name) for trace_name in carbon_traces_path]

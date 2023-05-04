@@ -25,10 +25,6 @@ def get_datetime(iso_str):
     return dt
 
 # Constants
-ds_size_map = {
-    "tinyimagenet": 100000,
-    "imagenet": 1281167,
-}
 
 cpu_power_offset = 50
 
@@ -109,8 +105,6 @@ carbon_consumption = []
 prices = []
 
 model_profile = task_profile[selected_task]
-dataset = model_profile["dataset"]
-ds_size = ds_size_map[dataset]
 num_profile = max(model_profile["replicas"])
 
 tp_table = np.zeros(num_profile+1)
@@ -118,10 +112,8 @@ energy_table = np.zeros_like(tp_table)
 
 for num_workers, profile in model_profile["replicas"].items():
     tp_table[num_workers] = profile["throughput"]
-    energy_table[num_workers] = profile["gpuPower"] + (cpu_power_offset * num_workers)  # Add CPU energy offset
+    energy_table[num_workers] = profile["power"] + (cpu_power_offset * num_workers)  # Add CPU energy offset
 
-
-tp_table = tp_table / ds_size  # to epochs per hour
 
 energy_table = energy_table * 3600. / 3.6e+6   # to Kwh per hour
 num_epochs = tp_table[1] * input_task_length

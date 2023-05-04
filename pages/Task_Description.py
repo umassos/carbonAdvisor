@@ -25,28 +25,29 @@ profile_data = st.session_state["config_session"]
 
 tasks = {}
 for name, task in profile_data.items():
-    task_name = f"{task['dataset']}-{name}"
-
     num_profile = max(task["replicas"])
 
     tp_table = np.zeros(num_profile + 1)
     energy_table = np.zeros_like(tp_table)
-
+    mc_table = np.zeros_like(tp_table)
+    prev_profile = 0
     for num_workers, profile in task["replicas"].items():
         tp_table[num_workers] = profile["throughput"]
-        energy_table[num_workers] = profile["gpuPower"]
+        energy_table[num_workers] = profile["power"]
+        if num_workers == 0:
+            mc_table[num_workers] = 0
+        else:
+            mc_table[num_workers] = profile["throughput"] - prev_profile
+        prev_profile = profile["throughput"]
+            
 
-    tasks[task_name] = {
+    tasks[name] = {
         "tp_table": tp_table,
-        "gpu_power_table": energy_table
+        "power_table": energy_table,
+        "mc_table": mc_table
     }
 
-ds_size_map = {
-    "tinyimagenet": 100000,
-    "imagenet": 1281167,
-}
-
-selected_tasks = st.sidebar.multiselect("Tasks", tasks.keys(), default=["tinyimagenet-resnet18"])
+selected_tasks = st.sidebar.multiselect("Tasks", tasks.keys(), default=["resnet18"])
 cpu_power_offset = int(st.sidebar.number_input("CPU Power offset (W)", min_value=0, max_value=100, value=50))
 
 st.markdown("""This page description the profile behavior of different tasks. The performance is profiled on
@@ -56,45 +57,46 @@ st.markdown("""This page description the profile behavior of different tasks. Th
 
 st.markdown("### Number of Nodes vs. Throughput")
 tp_fig = go.Figure()
-for task_name in selected_tasks:
-    ds_name = task_name.split('-')[0]
-    ds_size = ds_size_map[ds_name]
-
-    tp_per_epoch = tasks[task_name]["tp_table"]/ds_size
+for name in selected_tasks:
+    tp = tasks[name]["tp_table"]
     tp_fig.add_trace(
-        go.Scatter(y=tp_per_epoch, name=task_name,
-                   hovertemplate="# Nodes: %{x}<br>Epochs per hour: %{y:.2f}")
+        go.Scatter(y=tp, name=name,
+                   hovertemplate="# Nodes: %{x}<br>Samples per hour: %{y:.2f}")
     )
 
-    tasks[task_name]["tp_per_epoch"] = tp_per_epoch
+    tasks[name]["tp"] = tp
 
-tp_fig.update_yaxes(title_text="Epochs / hour")
+tp_fig.update_yaxes(title_text="Samples / hour")
 tp_fig.update_xaxes(title_text="# Nodes")
 
 st.plotly_chart(tp_fig)
 
 
-st.markdown("### Number of Nodes vs. Energy Footprint")
+st.markdown("### Marginal Capacity")
+marginal_capacity_fig = go.Figure()
+for name in selected_tasks:
+    marginal_capacity_fig.add_trace(
+        go.Scatter(y=tasks[name]["mc_table"], name=name,
+                   hovertemplate="# Nodes: %{x} Marginal Capacity %{y:.2f} Samples/hour")
+    )
+
+st.plotly_chart(marginal_capacity_fig)
+
+
+st.markdown("### Number of Nodes vs. Power Consumption")
 energy_fig = go.Figure()
-for task_name in selected_tasks:
-    num_nodes = np.arange(tasks[task_name]["gpu_power_table"].shape[0])
+for name in selected_tasks:
+    num_nodes = np.arange(tasks[name]["power_table"].shape[0])
     power_offset = num_nodes * cpu_power_offset
-    energy_footprint = (tasks[task_name]["gpu_power_table"] + power_offset) * 3600 / 3.6e+6
+    power_consumption = (tasks[name]["power_table"] + power_offset)
 
     energy_fig.add_trace(
-        go.Scatter(y=energy_footprint, name=task_name,
-                   hovertemplate="# Nodes: %{x}<br>Energy per hour: %{y:.2f} KwH")
+        go.Scatter(y=power_consumption, name=name,
+                   hovertemplate="# Nodes: %{x}<br>Energy per hour: %{y:.2f} watt")
     )
-    tasks[task_name]["energy_footprint"] = energy_footprint
-
+    tasks[name]["power_consumption"] = power_consumption
+    energy_fig.update_yaxes(title_text="Power (watt)")
+    energy_fig.update_xaxes(title_text="# Nodes")
+    
 st.plotly_chart(energy_fig)
 
-st.markdown("### Number of Nodes vs. Energy per Throughput")
-energy_per_tp_fig = go.Figure()
-for task_name in selected_tasks:
-    energy_per_tp_fig.add_trace(
-        go.Scatter(y=tasks[task_name]["energy_footprint"] / (tasks[task_name]["tp_per_epoch"] + 1e-6) , name=task_name,
-                   hovertemplate="# Nodes: %{x}<br>Energy / Throughput: %{y:.2f} KwH/Epoch")
-    )
-
-st.plotly_chart(energy_per_tp_fig)

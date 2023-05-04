@@ -16,7 +16,7 @@ CarbonState = namedtuple("CarbonState", ["carbon_intensity", "remain_epochs"])
 
 
 class Environment(ABC):
-    """ Abstract class for training environment """
+    """ Abstract class for task processing environment """
 
     @abstractmethod
     def take_action(self, action, exec_time):

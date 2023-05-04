@@ -15,5 +15,5 @@ RUN pip3 install -r /workspace/requirements.txt
 
 WORKDIR /workspace
 
-ENTRYPOINT ["streamlit", "run", "Policy_Model.py"]
+ENTRYPOINT ["streamlit", "run", "Home.py"]
 

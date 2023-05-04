@@ -15,7 +15,7 @@ from typing import Dict
 
 
 class Agent(ABC):
-    """ Agent to control elastic training tasks """
+    """ Agent to control elastic tasks """
 
     @abstractmethod
     def get_action(self, states):
@@ -127,7 +127,7 @@ class CarbonScaleAgent(Agent):
             throughput_table: i element is the epochs per unit time using i workers
             energy_table: i element is the energy per unit time using i workers
             max_worker: maximum number of workers to use
-            deadline: job deadline
+            deadline: task deadline
         """
         super(CarbonScaleAgent, self).__init__()
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 This represents a page in carbonAdvisor to visualize the carbon consumption with respect to the various completion time.
-Input: locational Carbon trace data, ML task, task length, Max workers and time.
+Input: locational Carbon trace data, batch task, task length, Max workers and time.
 Output: carbon consumption vs completion Time
 
 Author: Swathi Natarajan <swathinatara@umass.edu>
@@ -34,10 +34,6 @@ def get_datetime(iso_str):
     return dt
 
 # Constants
-ds_size_map = {
-    "tinyimagenet": 100000,
-    "imagenet": 1281167,
-}
 
 cpu_power_offset = 50
 
@@ -84,8 +80,6 @@ started_index = carbon_trace.index[carbon_trace["datetime"] == started_datetime]
 st.markdown("## Effect of completion time on the carbon footprint")
 
 model_profile = task_profile[selected_task]
-dataset = model_profile["dataset"]
-ds_size = ds_size_map[dataset]
 num_profile = max(model_profile["replicas"])
 
 tp_table = np.zeros(num_profile+1)
@@ -93,9 +87,8 @@ energy_table = np.zeros_like(tp_table)
 
 for num_workers, profile in model_profile["replicas"].items():
     tp_table[num_workers] = profile["throughput"]
-    energy_table[num_workers] = profile["gpuPower"] + (cpu_power_offset * num_workers)  
+    energy_table[num_workers] = profile["power"] + (cpu_power_offset * num_workers)  
 
-tp_table = tp_table / ds_size  
 energy_table = energy_table * 3600. / 3.6e+6  
 num_epochs = tp_table[1] * input_task_length
 

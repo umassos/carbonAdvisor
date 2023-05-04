@@ -18,12 +18,6 @@ import agent
 import eval_util
 from Update_Session import fUpdateSessionDefaultProfile
 
-
-def get_datetime(iso_str):
-    dt = parser.parse(iso_str)
-    dt = datetime.datetime.combine(dt.date(), datetime.time(hour=dt.hour))
-    return dt
-
 # Constants
 
 cpu_power_offset = 50
@@ -58,10 +52,9 @@ for selected_trace in carbon_trace_names_test:
     carbon_trace = pd.read_csv(carbon_trace_map[selected_trace])
 
     carbon_trace = carbon_trace[carbon_trace["carbon_intensity_avg"].notna()]
-    carbon_trace = carbon_trace[carbon_trace["carbon_intensity_avg"].notna()]
-    carbon_trace["hour"] = carbon_trace["zone_datetime"].apply(lambda x: parser.parse(x).hour)
-    carbon_trace["datetime"] = carbon_trace["zone_datetime"].apply(get_datetime)
-    carbon_trace["date"] = carbon_trace["zone_datetime"].apply(lambda x: parser.parse(x).date())
+    carbon_trace["datetime"] = carbon_trace['timestamp'].apply(lambda d: datetime.datetime.fromtimestamp(d))
+    carbon_trace["date"] = pd.to_datetime(carbon_trace['datetime']).dt.date
+    carbon_trace["hour"] = pd.to_datetime(carbon_trace['datetime']).dt.hour
     carbon_traces.append(carbon_trace)
     min_date_value.append(carbon_trace["date"].min())
     max_date_value.append(carbon_trace["date"].max())

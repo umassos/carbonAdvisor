@@ -1,0 +1,27 @@
+sampleprofilename:
+  instance: something
+  replicas:
+    1:
+      power: 1234.5678
+      throughput: 234567.234
+    2:
+      power: 1234.5678
+      throughput: 234567.234
+    3:
+      power: 1234.5678
+      throughput: 234567.234
+    4:
+      power: 1234.5678
+      throughput: 234567.234
+    5:
+      power: 1234.5678
+      throughput: 234567.234
+    6:
+      power: 1234.5678
+      throughput: 234567.234
+    7:
+      power: 1234.5678
+      throughput: 234567.234
+    8:
+      power: 1234.5678
+      throughput: 234567.234

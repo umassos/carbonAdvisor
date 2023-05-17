@@ -17,6 +17,8 @@ import environment
 import agent
 import eval_util
 from Update_Session import fUpdateSessionDefaultProfile
+import plotly.express as px
+import instance
 
 # Constants
 
@@ -24,10 +26,20 @@ cpu_power_offset = 50
 
 st.sidebar.markdown("### Inputs")
 st.markdown("## Country wise analysis")
-st.markdown("### C02 consumption and Prices")
+st.markdown("### Q. Where should you run your job?")
+st.markdown("Optimal Country Selection: This approach focuses on identifying the most suitable country based on \
+            two key criteria - decreasing carbon consumption and relative lower cost. By considering both environmental \
+            sustainability and economic efficiency, decision-makers can prioritize countries that demonstrate a commitment \
+             to reducing their carbon footprint while offering cost advantages. This balanced approach ensures that the chosen \
+            country aligns with sustainability goals and provides cost-effective solutions, contributing to a greener future.")
 
-st.markdown("#### 1. Country vs CO2 consumption")
-st.markdown("This is a plot which shows countries and their respective CO2 consumption")
+
+
+st.markdown("#### 1. Carbon consumed to run the job")
+st.markdown("This plot showcases the carbon consumption of different countries and provides insights into their relative levels of carbon emissions. \
+            The carbon consumption values have been calculated using the Carbon Scaler algorithm, which takes into account various factors to estimate \
+            the carbon footprint of each country. By visualizing this data, we can gain a better understanding of the varying carbon consumption patterns \
+             across different regions and identify potential areas for environmental improvement and sustainable practices.")
 
 # Call the library to update the session state "Config_session" if it is not available.
 if "config_session" not in st.session_state:
@@ -55,6 +67,8 @@ for selected_trace in carbon_trace_names_test:
     carbon_trace["datetime"] = carbon_trace['timestamp'].apply(lambda d: datetime.datetime.fromtimestamp(d))
     carbon_trace["date"] = pd.to_datetime(carbon_trace['datetime']).dt.date
     carbon_trace["hour"] = pd.to_datetime(carbon_trace['datetime']).dt.hour
+    carbon_trace["Country"] = selected_trace
+    
     carbon_traces.append(carbon_trace)
     min_date_value.append(carbon_trace["date"].min())
     max_date_value.append(carbon_trace["date"].max())
@@ -94,10 +108,12 @@ started_datetime = datetime.datetime.combine(input_started_date, started_hour_ti
 
 sched_fig = make_subplots(specs=[[{"secondary_y": True}]])
 # sched_fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+countries = []
 carbon_consumption = []
 prices = []
 
 model_profile = task_profile[selected_task]
+min_profile_replicas = min(model_profile["replicas"])
 num_profile = max(model_profile["replicas"])
 
 tp_table = np.zeros(num_profile+1)
@@ -115,53 +131,168 @@ reward = environment.NonLinearReward(tp_table, energy_table)
 
 for carbon_trace in carbon_traces:
     # Carbon scale method
+    
     started_index = carbon_trace.index[carbon_trace["datetime"] == started_datetime][0]
     env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
                                             reward, np.array([started_index]), num_epochs)
     carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
     carbon_cost_scale, carbon_scale_states, carbon_scale_action, exec_time = \
         eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
-    # print(carbon_scale_states)
-    # st.metric("Carbon Scale Footprint", f"{carbon_cost_scale[0]:.2f}g")
-    #to kgs
 
     #calculate compute time (multiply exec_time * nodes(servers))
     exec_time = np.array(exec_time)
     nodes = np.array(carbon_scale_action.flatten())
-    # print(nodes)
-    # print(exec_time)
-    compute_time = np.sum(np.multiply(nodes,exec_time))
+    # print(np.shape(nodes))
+    # print(np.shape(exec_time))
+    compute_time = float(np.sum(np.multiply(nodes,exec_time)))
     #need to multiply with instance later - to do
-    prices.append(compute_time)
+    instance_price = float(instance.get_instance_price(str(model_profile["instance"])))
+    
+    prices.append(compute_time*instance_price)
+    # print(carbon_trace["Country"][0])
+    countries.append(carbon_trace["Country"][0])
+    
     carbon_consumption.append(carbon_cost_scale[0]/1000)
 
 
+sched_fig = make_subplots(specs=[[{"secondary_y": True}]])
+
 sched_fig.add_trace(
-    go.Bar(x=carbon_trace_names_test,
-               y=carbon_consumption,
-                name="Carbon Intensity"),
+    go.Bar(x=countries,
+               y=carbon_consumption, 
+                name="Carbon Consumption in regions"),
+    secondary_y=False
+)
+sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)")
+sched_fig.update_xaxes(title_text="Countries")
+sched_fig.update_layout(title="A Comparison of Carbon Consumption Across Countries")
+st.plotly_chart(sched_fig)
+
+
+st.markdown("#### 2. Cost incurred to run job")
+st.markdown("This plot provides an estimate of the expenses incurred in running an instance  \
+            on the Amazon Web Services (AWS) platform. The calculated price takes into account the compute time, which is \
+            determined by multiplying the execution time by the number of used nodes or servers for each hour. This compute \
+            time is then multiplied by the cost of running an AWS instance specific to the chosen region. By visualizing this \
+            data, users can gain insights into the financial implications of running instances on AWS and make informed decisions \
+            regarding resource allocation and cost optimization. The plot highlights the importance of considering factors such \
+            as execution time, number of nodes, and regional costs when estimating the overall expenses associated with running \
+            instances on the AWS platform.")
+
+
+sched_fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+
+sched_fig1.add_trace(
+    go.Bar(x=countries,
+               y=prices, 
+                name="Prices in regions"),
     secondary_y=False
 )
 
-# sched_fig1.add_trace(
-#     go.Bar(x=carbon_trace_names_test, y=prices,  name="Price per instance"),
-#     secondary_y=True
-# )
+sched_fig1.update_yaxes(title_text="Prices ($)")
+sched_fig1.update_xaxes(title_text="Countries")
+sched_fig1.update_layout(title="A Comparison of Prices Across Countries")
+
+st.plotly_chart(sched_fig1)
+
+
+### Batch sampling
+st.markdown("#### Batch Sampling")
+st.markdown("Selecting a representative subset of data based on user-defined sample size for efficient analysis and insights.")
+
+input_num_samples = int(st.number_input("Sample size", step=1, min_value=1, max_value=50000, value=1000))
+
+countries =[]
+carbon_consumption =[]
+prices = []
+for carbon_trace in carbon_traces:
+    # Carbon scale method
+    
+    started_index_batch = np.random.randint(0, carbon_trace.shape[0]-input_deadline, input_num_samples)
+    started_index = carbon_trace.index[carbon_trace["datetime"] == started_datetime][0]
+    env = environment.CarbonOnlyEnvironment(carbon_trace["carbon_intensity_avg"].values,
+                                            reward, started_index_batch, num_epochs)
+    carbon_scale_agent = agent.CarbonScaleAgent(tp_table, energy_table, input_max_workers, input_deadline)
+    carbon_cost_scale_batch, carbon_scale_states_batch, carbon_scale_action_batch, exec_time = \
+        eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
+
+    instance_price = float(instance.get_instance_price(str(model_profile["instance"])))
+    
+    #calculate compute time (multiply exec_time * nodes(servers))
+    exec_time = np.array(exec_time)
+    nodes = np.array(carbon_scale_action_batch)
+    # print(carbon_cost_scale_batch)
+    
+    result = []
+
+    countries.extend([carbon_trace["Country"][0]]*input_num_samples)
+    carbon_consumption.extend(carbon_cost_scale_batch/1000)
+
+    for i in range(input_num_samples):
+        flattened_y = exec_time[i].flatten()
+        multiplied_values = nodes[i] * exec_time[i]
+        prices.append(np.sum(multiplied_values)*instance_price)
+
+    # compute_time = np.sum(np.multiply(nodes,exec_time))
+    # #need to multiply with instance later - to do
+    # prices.append(compute_time)
+    # # print(carbon_trace["Country"][0])
+    
+
+st.markdown("#### 1. Carbon consumed to run the job")
+        
+df = pd.DataFrame({'Countries': countries, 'carbon_consumption': carbon_consumption}, columns=['Countries', 'carbon_consumption'])
+# Group the data by country
+groups = df.groupby('Countries')
+
+# Create a subplot with 1 row and 3 columns
+fig = make_subplots(rows=1, cols=len(set(countries)))
+
+# Loop over each group and create a boxplot for that group
+for i, (name, group) in enumerate(groups):
+    fig.add_trace(
+        go.Box(y=group['carbon_consumption'], name=name),
+        row=1, col=1
+    )
+
+# Set the layout for the subplots
+fig.update_layout(title='Carbon consumption across countries', height=500, width=800)
+fig.update_yaxes(title_text="Carbon Consumption (Kg)")
+fig.update_xaxes(title_text="Countries")
+# Display the subplots
+st.plotly_chart(fig)
 
 
 
-sched_fig.update_yaxes(title_text="Carbon Consumption (Kg)", secondary_y=False )
-# sched_fig1.update_yaxes(title_text="Price per instance")
-sched_fig.update_xaxes(title_text="Countries",categoryorder='total ascending')
-# sched_fig1.update_xaxes(title_text="Countries")
-st.plotly_chart(sched_fig)
-# st.plotly_chart(sched_fig1)
+
+st.markdown("#### 2. Cost incurred to run the job")
+# df = pd.DataFrame({'Countries': carbon_trace_names_test, 'Prices': list(prices)}, columns=['Countries', 'Prices'])
+
+# st.table(df)
+
+df = pd.DataFrame({'Countries': countries, 'prices': prices}, columns=['Countries', 'prices'])
+
+# Group the data by country
+groups = df.groupby('Countries')
 
 
-st.markdown("#### 2. Country and their price/instance")
-st.markdown("Note: The Price calculated is the sum of time required to execute multiplies by number of used nodes(servers) at every hour")
-df = pd.DataFrame({'Countries': carbon_trace_names_test, 'Prices': list(prices)}, columns=['Countries', 'Prices'])
 
-st.table(df)
+# Create a subplot with 1 row and 3 columns
+fig = make_subplots(rows=1, cols=len(set(countries)))
 
-st.markdown("The decision of choosing a country would be based on decreasing carbon consumption and also which has relatively lower cost")
+# Loop over each group and create a boxplot for that group
+for i, (name, group) in enumerate(groups):
+    
+    fig.add_trace(
+        
+        go.Box(y=group['prices'], name=name),
+        row=1, col=1
+    )
+
+# Set the layout for the subplots
+fig.update_yaxes(title_text="Prices ($)")
+fig.update_xaxes(title_text="Countries")
+fig.update_layout(title='Cost incurred across countries', height=500, width=800)
+
+# Display the subplots
+st.plotly_chart(fig)

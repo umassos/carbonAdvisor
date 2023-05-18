@@ -1,8 +1,14 @@
 import json
 import urllib.request
 
-def get_instance_price(instance_type):
-    url = 'https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/ec2/USD/current/ec2-ondemand-without-sec-sel/US%20East%20(Ohio)/Linux/index.json'
+countryRegion = {
+    'CA-ON' : 'US%20East%20(Ohio)',
+    'US-CAL-CISO' : 'US%20West%20(N.%20California)'
+}
+
+def get_instance_price(instance_type,country_code):
+    region = countryRegion[country_code]
+    url = 'https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/ec2/USD/current/ec2-ondemand-without-sec-sel/' + str(region) +'/Linux/index.json'
 
     try:
         # Fetch the JSON data from the URL
@@ -19,7 +25,7 @@ def get_instance_price(instance_type):
                         price = instance_types[instance]['price']
                         return price
             else:
-                return -1
+                return f"Instance price not found"
 
     except Exception as e:
         return f"An error occurred while fetching the pricing data: {str(e)}"

@@ -25,8 +25,7 @@ import instance
 cpu_power_offset = 50
 
 st.sidebar.markdown("### Inputs")
-st.markdown("## Country wise analysis")
-st.markdown("### Q. Where should you run your job?")
+st.markdown("## Q. Where should you run your job?")
 st.markdown("Optimal Country Selection: This approach focuses on identifying the most suitable country based on \
             two key criteria - decreasing carbon consumption and relative lower cost. By considering both environmental \
             sustainability and economic efficiency, decision-makers can prioritize countries that demonstrate a commitment \
@@ -146,7 +145,7 @@ for carbon_trace in carbon_traces:
     # print(np.shape(exec_time))
     compute_time = float(np.sum(np.multiply(nodes,exec_time)))
     #need to multiply with instance later - to do
-    instance_price = float(instance.get_instance_price(str(model_profile["instance"])))
+    instance_price = float(instance.get_instance_price(str(model_profile["instance"]),carbon_trace["Country"][0]))
     
     prices.append(compute_time*instance_price)
     # print(carbon_trace["Country"][0])
@@ -216,7 +215,7 @@ for carbon_trace in carbon_traces:
     carbon_cost_scale_batch, carbon_scale_states_batch, carbon_scale_action_batch, exec_time = \
         eval_util.simulate_agent(carbon_scale_agent, env, input_deadline)
 
-    instance_price = float(instance.get_instance_price(str(model_profile["instance"])))
+    instance_price = float(instance.get_instance_price(str(model_profile["instance"]),carbon_trace["Country"][0]))
     
     #calculate compute time (multiply exec_time * nodes(servers))
     exec_time = np.array(exec_time)

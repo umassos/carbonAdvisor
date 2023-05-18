@@ -1,5 +1,5 @@
 densenet121:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 107.19456730769231
@@ -26,7 +26,7 @@ densenet121:
       power: 970.8816633663366
       throughput: 1312684.8217821782
 efficientnet_b1:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 123.82610416666667
@@ -53,7 +53,7 @@ efficientnet_b1:
       power: 857.7245048543689
       throughput: 1653699.5689320387
 mobilenet_v2:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 124.33058208955224
@@ -80,7 +80,7 @@ mobilenet_v2:
       power: 884.1737614678899
       throughput: 2621332.162385321
 resnet18:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 149.98675714285716
@@ -107,7 +107,7 @@ resnet18:
       power: 1019.6534385964912
       throughput: 5297159.320175438
 resnet50:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 150.6098947368421
@@ -134,7 +134,7 @@ resnet50:
       power: 1038.16512987013
       throughput: 1429814.5922077922
 vgg16:
-  instance: p2.xlarge
+  instance: c5a.xlarge
   replicas:
     1:
       power: 147.93934210526314

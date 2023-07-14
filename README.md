@@ -8,7 +8,7 @@ Carbon advisor source for CarbonScaler project. To run CarbonAdvisor, follow the
 
 ## 2. Start the server
 
-```streamlit run Policy_Model.py```
+```streamlit run Home.py```
 
 ## 3. Deploy with Docker (optional)
 

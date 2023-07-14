@@ -53,7 +53,7 @@ carbon_trace_names = [os.path.splitext(trace_name)[0] for trace_name in carbon_t
 carbon_trace_map = {trace_name: trace_path for trace_name, trace_path in zip(carbon_trace_names, carbon_traces_path)}
 
 carbon_trace_names_test = st.sidebar.multiselect(
-    'Countries',carbon_trace_map,default = ["CA-ON"])
+    'Countries',carbon_trace_map,default = ["US-CAL-CISO"])
 
 carbon_traces = []
 min_date_value = []
@@ -149,7 +149,7 @@ for carbon_trace in carbon_traces:
     
     prices.append(compute_time*instance_price)
     # print(carbon_trace["Country"][0])
-    countries.append(carbon_trace["Country"][0])
+    countries.append(instance.countryRegion[carbon_trace["Country"][0]])
     
     carbon_consumption.append(carbon_cost_scale[0]/1000)
 
@@ -224,7 +224,7 @@ for carbon_trace in carbon_traces:
     
     result = []
 
-    countries.extend([carbon_trace["Country"][0]]*input_num_samples)
+    countries.extend([instance.countryRegion[carbon_trace["Country"][0]]]*input_num_samples)
     carbon_consumption.extend(carbon_cost_scale_batch/1000)
 
     for i in range(input_num_samples):
@@ -242,10 +242,10 @@ st.markdown("#### 1. Carbon consumed to run the job")
         
 df = pd.DataFrame({'Countries': countries, 'carbon_consumption': carbon_consumption}, columns=['Countries', 'carbon_consumption'])
 # Group the data by country
-groups = df.groupby('Countries')
+groups = df.groupby('Countries', sort=False)
 
 # Create a subplot with 1 row and 3 columns
-fig = make_subplots(rows=1, cols=len(set(countries)))
+fig = make_subplots(rows=1, cols=1)
 
 # Loop over each group and create a boxplot for that group
 for i, (name, group) in enumerate(groups):
@@ -255,8 +255,8 @@ for i, (name, group) in enumerate(groups):
     )
 
 # Set the layout for the subplots
-fig.update_layout(title='Carbon consumption across countries', height=500, width=800)
-fig.update_yaxes(title_text="Carbon Consumption (Kg)")
+fig.update_layout(title='Carbon consumption across countries', height=500, width=800, showlegend=False)
+fig.update_yaxes(title_text="Carbon Consumption (Kg)", range = [0, df["carbon_consumption"].max()*1.1])
 fig.update_xaxes(title_text="Countries")
 # Display the subplots
 st.plotly_chart(fig)
@@ -272,12 +272,12 @@ st.markdown("#### 2. Cost incurred to run the job")
 df = pd.DataFrame({'Countries': countries, 'prices': prices}, columns=['Countries', 'prices'])
 
 # Group the data by country
-groups = df.groupby('Countries')
+groups = df.groupby('Countries', sort=False)
 
 
 
 # Create a subplot with 1 row and 3 columns
-fig = make_subplots(rows=1, cols=len(set(countries)))
+fig = make_subplots(rows=1, cols=1)
 
 # Loop over each group and create a boxplot for that group
 for i, (name, group) in enumerate(groups):
@@ -289,9 +289,8 @@ for i, (name, group) in enumerate(groups):
     )
 
 # Set the layout for the subplots
-fig.update_yaxes(title_text="Prices ($)")
+fig.update_yaxes(title_text="Prices ($)", range = [0, df["prices"].max()*1.1])
 fig.update_xaxes(title_text="Countries")
-fig.update_layout(title='Cost incurred across countries', height=500, width=800)
-
+fig.update_layout(title='Cost incurred across countries', height=500, width=800, showlegend=False)
 # Display the subplots
 st.plotly_chart(fig)

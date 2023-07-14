@@ -111,6 +111,7 @@ fig = go.Figure(
         x=list_of_completion_times,
         y=list_of_max_workers,
         z=consumption,
+        zmin=0,
         colorscale = 'YlOrRd',
         colorbar = dict(title='CO2 cons.')
     ),
@@ -166,6 +167,7 @@ fig2 = go.Figure(
         x=list_of_completion_times,
         y=list_of_max_workers,
         z=consumption2,
+        zmin=0,
         colorscale = 'YlOrRd',
         customdata = hoverlist,
         hovertemplate =

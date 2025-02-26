@@ -8,6 +8,7 @@ countryRegion = {
     "US-MIDA-PJM": "US East (Ohio)",
     "AU-SA": "Asia Pacific (Sydney)",
     "US-NW-PACW": "US West (Oregon)",
+    "SE-SE1": "Europe (Stockholm)"
 }
 
 

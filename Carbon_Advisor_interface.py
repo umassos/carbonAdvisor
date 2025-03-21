@@ -36,3 +36,11 @@ class CarbonAdvisorMethods(ABC):
     def compute_schedule(self):
         pass
 
+    @abstractmethod
+    def get_compute_time(self):
+        pass
+
+    @abstractmethod
+    def get_total_emissions(self):
+        pass
+

@@ -80,8 +80,19 @@ class CarbonScalerAlgo(CarbonAdvisorMethods):
             "total_energy": self.total_energy(task_schedule),
         }
     
-scaler = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
-results = scaler.analyse_schedule()
+# scaler = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
+# results = scaler.analyse_schedule()
 # scaler.carbon_scaler_algo()
 
-print(results)
+    
+scaler1 = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
+
+scaler2 = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='SE-SE1', task='densenet121', start_date='2020-01-01', start_hour=12)
+
+result1 = scaler1.analyse_schedule()
+# scaler.carbon_scaler_algo()
+result2 = scaler2.analyse_schedule()
+
+print(result1)
+print(result2)
+# print(results)

@@ -30,17 +30,9 @@ class CarbonAdvisorMethods(ABC):
             (carbon_t["datetime"] <= str(start_date + datetime.timedelta(hours=self.deadline+self.slack)))
         ]
 
-        print("lennn", len(self.carbon_trace))
+        print("length of carbon trace", len(self.carbon_trace))
 
     @abstractmethod
     def compute_schedule(self):
-        pass
-
-    @abstractmethod
-    def get_compute_time(self):
-        pass
-
-    @abstractmethod
-    def get_total_emissions(self):
         pass
 

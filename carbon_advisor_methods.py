@@ -1,10 +1,9 @@
-import streamlit as st
-from Carbon_Advisor_interface import CarbonAdvisorMethods
+from carbon_advisor_interface import CarbonAdvisorInterface
 
-class CarbonScalerAlgo(CarbonAdvisorMethods):
+class CarbonAdvisor(CarbonAdvisorInterface):
 
     def compute_schedule(self):
-        carbon_t = self.carbon_trace["carbon_intensity_avg"].values/1000
+        carbon_t = self.carbon_trace["carbon_intensity_avg"].values
         marginal_capacity_carbon = []
         max_nodes = len(self.task_profile)
         print("printing max nodes ", max_nodes)
@@ -100,28 +99,18 @@ class CarbonScalerAlgo(CarbonAdvisorMethods):
         return total_emissions
 
 
-    def analyse_schedule(self):
-        # Runs all the functions and return results.
-       
-        task_schedule = self.compute_schedule()
-        completion_time, scale_at_time = self.get_scale_at_a_time(task_schedule)
-        return {
-            "completion_time": completion_time,
-            "scale_at_time": scale_at_time,
-            "total_emission": self.get_total_emission(task_schedule),
-            "total_energy": self.get_total_energy(task_schedule)
-        }
-    
-scaler = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
+
+
+scaler = CarbonAdvisor(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
 scaler.compute_schedule()
 print("printing compute time", scaler.get_compute_time())
 scaler.get_total_emissions()
 
 # ---------- Roshini 
 
-scaler1 = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
-result1 = scaler1.analyse_schedule()
-print(result1)
+# scaler1 = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='AU-SA', task='densenet121', start_date='2021-03-22', start_hour=8)
+# result1 = scaler1.analyse_schedule()
+# print(result1)
 # scaler2 = CarbonScalerAlgo(deadline=50, slack=8, num_workers=8, task_length=24, location='SE-SE1', task='resnet18', start_date='2020-01-01', start_hour=12)
 # scaler.carbon_scaler_algo()
 # result2 = scaler2.analyse_schedule()
